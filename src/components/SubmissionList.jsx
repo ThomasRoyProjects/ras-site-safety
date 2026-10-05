@@ -25,6 +25,12 @@ export default function SubmissionList({
   const pageCount = Math.max(1, Math.ceil(submissions.length / PAGE_SIZE));
   const visibleSubmissions = submissions.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
+  // Safari does not focus a button on click. Focus it so the drawer can return focus here.
+  function openDetail(event, submission) {
+    event.currentTarget.focus();
+    onSelect(submission);
+  }
+
   React.useEffect(() => {
     setPage(1);
   }, [submissions]);
@@ -85,7 +91,7 @@ export default function SubmissionList({
                       <button
                         className="button secondary admin-view-button"
                         type="button"
-                        onClick={() => onSelect(submission)}
+                        onClick={(event) => openDetail(event, submission)}
                         aria-label={`View submission for ${submission.worker_name || 'worker'} at ${submission.site_name || 'site'} on ${submission.work_date}`}
                       >
                         View details

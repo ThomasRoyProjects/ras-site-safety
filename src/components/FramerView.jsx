@@ -368,6 +368,12 @@ function NewSubmissionForm({ user, sites, sitesLoading, sitesError, onRetrySites
 function SubmissionHistory({ history, historyLoading, historyError, page, onPageChange, onRefresh, onSelect, detailLoading, detailError, selectedSubmission, onCloseDetail }) {
   const pageCount = Math.max(1, Math.ceil(history.length / PAGE_SIZE));
   const visibleHistory = history.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Safari does not focus a button on click. Focus it so the drawer can return focus here.
+  function openDetail(event, item) {
+    event.currentTarget.focus();
+    onSelect(item);
+  }
   return (
     <div className="framer-page" data-workspace-view="history">
       <h1 className="visually-hidden" tabIndex={-1}>Submission history</h1>
@@ -383,7 +389,7 @@ function SubmissionHistory({ history, historyLoading, historyError, page, onPage
             <summary>Show submission history ({history.length})</summary>
             <div className="framer-history-list">
               {visibleHistory.map((item) => (
-                <button type="button" className="framer-history-item" key={item.id} onClick={() => onSelect(item)} aria-label={`View submission for ${item.site_name || 'site'} on ${item.work_date}`}>
+                <button type="button" className="framer-history-item" key={item.id} onClick={(event) => openDetail(event, item)} aria-label={`View submission for ${item.site_name || 'site'} on ${item.work_date}`}>
                   <span><strong>{item.site_name || 'Site'}</strong><small>{item.work_date}</small></span>
                   <span className="framer-history-meta"><span className="status-badge">{item.status || '—'}</span><small>{item.photo_count ?? 0} {item.photo_count === 1 ? 'photo' : 'photos'}</small></span>
                 </button>
