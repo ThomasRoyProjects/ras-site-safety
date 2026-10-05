@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1750" viewBox="0 0 1900 1750" role="img" aria-labelledby="title desc">
+  <title id="title">RAS Site Safety SQLite Durable Object ERD</title>
+  <desc id="desc">Nine strict SQLite tables, their foreign-key relationships, and important constraints.</desc>
+  <rect width="1900" height="1750" fill="#f4f5f1"/>
+  <style>
+    text{font-family:Arial,sans-serif;fill:#242424}
+    .title{font-size:34px;font-weight:bold}
+    .subtitle{font-size:20px}
+    .entity{font-size:23px;font-weight:bold;fill:white}
+    .column{font-family:monospace;font-size:16px}
+    .relation{font-size:17px;fill:#065841;font-weight:bold}
+    .note{font-size:18px}
+    .small{font-size:16px}
+  </style>
+  <text class="title" x="50" y="55">RAS Site Safety — SQLite Durable Object ERD</text>
+  <text class="subtitle" x="50" y="92">Nine STRICT tables in SAFETY_APP / ras-site-safety. This diagram is simplified. See server/schema.sql for every NOT NULL and CHECK detail.</text>
+  <text class="subtitle" x="50" y="122">PK = primary key. FK = foreign key. SQL parent-to-child cardinality is 1 → 0..N unless shown otherwise.</text>
+
+  <g fill="none" stroke="#065841" stroke-width="3">
+    <path d="M470 280H560V440H650"/>
+    <path d="M990 245V390"/>
+    <path d="M1120 500H1260"/>
+    <path d="M1470 590V690"/>
+    <path d="M1470 590H1725V355"/>
+    <path d="M250 485V690"/>
+  </g>
+  <text class="relation" x="490" y="260">1 → 0..N</text>
+  <text class="relation" x="1008" y="340">1 → 0..N</text>
+  <text class="relation" x="1135" y="480">1 → 0..N</text>
+  <text class="relation" x="1490" y="655">1 → 0..N</text>
+  <text class="relation" x="1540" y="375">1 → 0..1</text>
+  <text class="relation" x="270" y="600">1 → 0..N</text>
+
+  <g>
+    <rect x="50" y="160" width="420" height="330" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
+    <path d="M58 160H462Q470 160 470 168V202H50V168Q50 160 58 160" fill="#065841"/>
+    <text class="entity" x="66" y="189">users</text>
+    <text class="column" x="66" y="228">id INTEGER [PK]</text>
+    <text class="column" x="66" y="253">email TEXT NOT NULL [NOCASE UNIQUE]</text>
+    <text class="column" x="66" y="278">name TEXT NOT NULL [trim CHECK]</text>
+    <text class="column" x="66" y="303">password_hash TEXT NOT NULL</text>
+    <text class="column" x="66" y="328">role TEXT NOT NULL [framer|admin]</text>
+    <text class="column" x="66" y="353">created_at TEXT NOT NULL</text>
+    <text class="column" x="66" y="378">must_change_password INTEGER [0|1]</text>
+    <text class="small" x="66" y="420">flag: NOT NULL DEFAULT 0 with 0|1 CHECK</text>
+  </g>
+
+  <g>
+    <rect x="560" y="160" width="430" height="125" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
+    <path d="M568 160H982Q990 160 990 168V202H560V168Q560 160 568 160" fill="#065841"/>
+    <text class="entity" x="576" y="189">sites</text>
+    <text class="column" x="576" y="228">id INTEGER [PK]</text>
+    <text class="column" x="576" y="253">name TEXT NOT NULL [NOCASE UNIQUE]</text>
+    <text class="small" x="576" y="275">trim(name) CHECK</text>
+  </g>
+
+  <g>
+    <rect x="650" y="390" width="470" height="485" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
+    <path d="M658 390H1112Q1120 390 1120 398V432H650V398Q650 390 658 390" fill="#065841"/>
+    <text class="entity" x="666" y="419">submissions</text>
+    <text class="column" x="666" y="458">id INTEGER [PK]</text>
+    <text class="column" x="666" y="483">worker_id INTEGER NOT NULL [FK]</text>
+    <text class="column" x="666" y="508">site_id INTEGER NOT NULL [FK]</text>
+    <text class="column" x="666" y="533">work_date TEXT NOT NULL [date CHECK]</text>
+    <text class="column" x="666" y="558">hard_hat INTEGER NOT NULL [0|1]</text>
+    <text class="column" x="666" y="583">high_visibility_vest INTEGER [0|1]</text>
+    <text class="column" x="666" y="608">safety_boots INTEGER [0|1]</text>
+    <text class="column" x="666" y="633">eye_protection INTEGER [0|1]</text>
+    <text class="column" x="666" y="658">fall_protection INTEGER [0|1]</text>
+    <text class="column" x="666" y="683">ladders_scaffolds_inspected INTEGER [0|1]</text>
+    <text class="column" x="666" y="708">tools_cords_checked INTEGER [0|1]</text>
+    <text class="column" x="666" y="733">hazards_identified INTEGER [0|1]</text>
+    <text class="column" x="666" y="758">notes TEXT NOT NULL DEFAULT ''</text>
+    <text class="column" x="666" y="783">created_at TEXT NOT NULL</text>
+    <text class="column" x="666" y="833">UNIQUE (worker_id, site_id, work_date)</text>
+  </g>
+
+  <g>
+    <rect x="1260" y="390" width="430" height="205" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
+    <path d="M1268 390H1682Q1690 390 1690 398V432H1260V398Q1260 390 1268 390" fill="#065841"/>
+    <text class="entity" x="1276" y="419">photos</text>
+    <text class="column" x="1276" y="458">id INTEGER [PK]</text>
+    <text class="column" x="1276" y="483">submission_id INTEGER NOT NULL [FK]</text>
+    <text class="column" x="1276" y="508">mime_type TEXT NOT NULL [JPEG|PNG|WebP]</text>
+    <text class="column" x="1276" y="533">size_bytes INTEGER NOT NULL [1..10485760]</text>
+    <text class="small" x="1276" y="570">photos_submission_id_idx</text>
+  </g>
+
+  <g>
+    <rect x="1260" y="690" width="430" height="205" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
+    <path d="M1268 690H1682Q1690 690 1690 698V732H1260V698Q1260 690 1268 690" fill="#065841"/>
+    <text class="entity" x="1276" y="719">photo_chunks</text>
+    <text class="column" x="1276" y="758">photo_id INTEGER NOT NULL [FK]</text>
+    <text class="column" x="1276" y="783">chunk_index INTEGER NOT NULL [≥ 0]</text>
+    <text class="column" x="1276" y="808">bytes BLOB NOT NULL [1..1048576]</text>
+    <text class="column" x="1276" y="858">PRIMARY KEY (photo_id, chunk_index)</text>
+  </g>
+
+  <g>
+    <rect x="1600" y="120" width="250" height="235" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
+    <path d="M1608 120H1842Q1850 120 1850 128V162H1600V128Q1600 120 1608 120" fill="#065841"/>
+    <text class="entity" x="1616" y="149">photo_thumbnails</text>
+    <text class="column" x="1616" y="188">photo_id INTEGER</text>
+    <text class="column" x="1616" y="213">[PK, FK CASCADE]</text>
+    <text class="column" x="1616" y="252">bytes BLOB NOT NULL</text>
+    <text class="column" x="1616" y="277">[1..1048576 CHECK]</text>
+    <text class="small" x="1616" y="320">stored WebP output</text>
+  </g>
+
+  <g>
+    <rect x="50" y="690" width="420" height="195" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
+    <path d="M58 690H462Q470 690 470 698V732H50V698Q50 690 58 690" fill="#065841"/>
+    <text class="entity" x="66" y="719">sessions</text>
+    <text class="column" x="66" y="758">token_hash TEXT NOT NULL [PK]</text>
+    <text class="column" x="66" y="783">[64 lowercase hex CHECK]</text>
+    <text class="column" x="66" y="822">user_id INTEGER NOT NULL [FK]</text>
+    <text class="column" x="66" y="847">expires_at INTEGER NOT NULL [&gt; 0]</text>
+    <text class="small" x="66" y="872">sessions_user_id_idx, sessions_expires_at_idx</text>
+  </g>
+
+  <g>
+    <rect x="50" y="1020" width="420" height="125" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
+    <path d="M58 1020H462Q470 1020 470 1028V1062H50V1028Q50 1020 58 1020" fill="#065841"/>
+    <text class="entity" x="66" y="1049">app_metadata</text>
+    <text class="column" x="66" y="1088">key TEXT [PK]</text>
+    <text class="column" x="66" y="1113">value TEXT NOT NULL</text>
+  </g>
+
+  <g>
+    <rect x="650" y="1010" width="470" height="235" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
+    <path d="M658 1010H1112Q1120 1010 1120 1018V1052H650V1018Q650 1010 658 1010" fill="#065841"/>
+    <text class="entity" x="666" y="1039">upload_staging_chunks</text>
+    <text class="column" x="666" y="1078">upload_id TEXT NOT NULL [43-char CHECK]</text>
+    <text class="column" x="666" y="1103">photo_index INTEGER NOT NULL [0..4 CHECK]</text>
+    <text class="column" x="666" y="1128">chunk_index INTEGER NOT NULL [≥ 0 CHECK]</text>
+    <text class="column" x="666" y="1153">bytes BLOB NOT NULL [1..1048576 CHECK]</text>
+    <text class="column" x="666" y="1190">PRIMARY KEY (upload_id, photo_index,</text>
+    <text class="column" x="666" y="1215">chunk_index)</text>
+  </g>
+
+  <text class="note" x="50" y="1320">API invariants: one to five decoded photos per submission. Original bytes use contiguous chunks of at most one MiB.</text>
+  <text class="note" x="50" y="1355">The unique worker/site/date key prevents duplicate submissions. The bootstrap marker prevents reseeding.</text>
+  <text class="note" x="50" y="1390">Cascade direction: deleting a photos row deletes matching photo_chunks and photo_thumbnails rows.</text>
+  <text class="note" x="50" y="1425">upload_staging_chunks is temporary, private, request-scoped, and cleared after failure or commit.</text>
+  <text class="note" x="50" y="1475">Indexes: photos_submission_id_idx, sessions_user_id_idx, sessions_expires_at_idx.</text>
+  <text class="note" x="50" y="1510">Application checks add Gregorian dates, ownership, photo count, dimensions, pixels, quotas, and session expiry.</text>
+  <text class="note" x="50" y="1545">Thumbnail rows have a one-to-zero-or-one relationship with photos and store bounded WebP bytes.</text>
+  <text class="note" x="50" y="1580">Migration: add users.must_change_password when absent, then record schema_version=3 in app_metadata.</text>
+  <text class="note" x="50" y="1615">FKs: submissions.worker_id → users.id. submissions.site_id → sites.id. photos.submission_id → submissions.id.</text>
+  <text class="note" x="50" y="1650">FKs: sessions.user_id → users.id. photo_chunks.photo_id and photo_thumbnails.photo_id → photos.id.</text>
+</svg>

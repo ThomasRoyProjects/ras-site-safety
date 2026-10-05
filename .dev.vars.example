@@ -1,0 +1,3 @@
+# wrangler dev reads .dev.vars.
+ADMIN_INITIAL_PASSWORD=replace-with-a-strong-admin-password
+FRAMER_INITIAL_PASSWORD=replace-with-a-strong-framer-password

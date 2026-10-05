@@ -1,0 +1,17 @@
+node_modules/
+dist/
+
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+data/
+uploads/
+
+.agents/
+
+.DS_Store
+.wrangler/

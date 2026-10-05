@@ -1,0 +1,7 @@
+.account-panel { max-width: 42rem; margin: 0 auto; }
+.account-panel h1 { margin: .4rem 0 .65rem; }
+.account-form { display: grid; gap: 1rem; margin-top: 1.5rem; }
+.password-field { position: relative; }
+.password-field .field input { padding-right: 5.25rem; }
+.password-toggle { position: absolute; right: .5rem; bottom: .35rem; min-width: 44px; min-height: 44px; padding: .35rem .65rem; border: 0; border-radius: .35rem; color: var(--brand); background: transparent; font-weight: 700; }
+.password-toggle:hover { background: #edf1ea; }

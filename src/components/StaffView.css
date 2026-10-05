@@ -1,0 +1,33 @@
+.staff-view { width: min(100%, 78rem); margin: 0 auto; }
+.staff-create-panel, .staff-list-panel { margin-bottom: 1.25rem; }
+.staff-form { align-items: end; margin-top: 1.25rem; }
+.staff-create-details { margin-top: 1rem; border-top: 1px solid var(--border); }
+.staff-create-details > summary { min-height: 48px; padding: .8rem 0; color: var(--brand); font-weight: 700; cursor: pointer; }
+.staff-form .password-field { min-width: 0; }
+.staff-guidance { grid-column: 1 / -1; margin-top: -.65rem; }
+.staff-submit { justify-self: start; }
+.staff-form-alert { margin-top: 1rem; }
+.staff-result-count { margin: -.75rem 0 1rem; }
+.staff-list { display: grid; gap: .7rem; margin: 0; padding: 0; list-style: none; }
+.staff-card { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--border); border-radius: .55rem; }
+.staff-card > div:first-child { display: grid; gap: .15rem; min-width: 0; }
+.staff-card strong, .staff-card span, .staff-card small { overflow-wrap: anywhere; }
+.staff-card span { color: var(--muted); }
+.staff-card small { color: var(--muted); font-size: .8rem; }
+.staff-card-actions { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; justify-content: flex-end; }
+.status-temporary { color: #7c4d08; background: #fff4d7; }
+.staff-reset-dialog { width: min(calc(100% - 2rem), 34rem); max-width: 34rem; max-height: calc(100vh - 2rem); max-height: calc(100dvh - 2rem); padding: 0; border: 0; border-radius: var(--radius); color: var(--ink); background: transparent; }
+.staff-reset-dialog::backdrop { background: #18211c66; }
+.staff-reset-panel { width: 100%; max-height: calc(100vh - 2rem); max-height: calc(100dvh - 2rem); overflow-y: auto; box-shadow: 0 14px 45px #18211c40; }
+.staff-reset-form { margin-top: 1.25rem; }
+.staff-reset-error { margin-top: 1rem; }
+@media (max-width: 700px) {
+  .staff-card { align-items: flex-start; flex-direction: column; }
+  .staff-card-actions { justify-content: flex-start; width: 100%; }
+}
+@media (max-width: 600px) {
+  .staff-form { grid-template-columns: 1fr; }
+  .staff-submit { width: 100%; }
+  .staff-reset-dialog { width: calc(100% - 1rem); }
+  .staff-reset-panel .section-heading { align-items: flex-start; }
+}

@@ -1,0 +1,58 @@
+.admin-view { width: min(100%, 78rem); margin: 0 auto; padding-bottom: 3rem; }
+.admin-overview { display: grid; gap: 1.25rem; }
+.admin-active-filter, .admin-result-count, .admin-summary-context { margin: 0; color: var(--muted); font-size: .9rem; }
+.panel.admin-filter-panel { margin-top: 0; padding: 1.25rem; }
+.panel.admin-list-panel { margin-top: 1.25rem; padding: 1.25rem; }
+.admin-filter-panel .section-heading, .admin-list-panel .section-heading, .admin-summary-section .section-heading { align-items: flex-start; gap: 1rem; }
+.admin-filter-panel h2, .admin-summary-section h2, .admin-list-panel h2 { margin: .15rem 0 0; }
+.admin-active-filter { min-width: 0; max-width: 26rem; padding-top: .25rem; overflow-wrap: anywhere; text-align: right; }
+.admin-summary-context { min-width: 0; overflow-wrap: anywhere; text-align: right; }
+.admin-filter-form { margin-top: 1.25rem; }
+.field-grid.admin-filter-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.admin-filter-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1rem; }
+.admin-filter-error { margin-top: 1rem; }
+.admin-summary-section { margin: 0; }
+.admin-summary-grid { margin-top: .9rem; }
+.admin-summary-card { display: flex; min-height: 7.25rem; flex-direction: column; align-items: flex-start; justify-content: center; gap: .15rem; }
+.admin-summary-card strong { color: var(--ink); font-size: 2rem; }
+.admin-summary-card small { color: var(--muted); }
+.admin-summary-site { font-weight: 650; overflow-wrap: anywhere; }
+.admin-list-panel { margin-top: 1.25rem; }
+.admin-table-wrap { margin-top: 1rem; overflow-x: auto; }
+.admin-submission-table th, .admin-submission-table td { vertical-align: middle; }
+.admin-submission-table tbody tr.admin-selected-row { background: #f4f1e9; }
+.admin-view-button { min-width: 7rem; white-space: nowrap; }
+.admin-loading { margin: 1.25rem 0 0; color: var(--muted); }
+.admin-empty-list { margin-top: 1rem; }
+.admin-empty-list h3 { margin: 0 0 .25rem; }
+.admin-history-details { border-top: 1px solid var(--border); }
+.admin-history-details summary { min-height: 48px; padding: .8rem 0; cursor: pointer; color: var(--brand); font-weight: 700; }
+.submission-delete-action { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+.submission-delete-confirmation { display: grid; gap: .9rem; padding: 1rem; border: 1px solid #e4bdb8; border-radius: 8px; background: #fff8f6; }
+.submission-delete-confirmation p { color: #822f27; font-weight: 650; }
+.submission-delete-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.button.danger { background: #9b3028; border-color: #9b3028; color: #fff; }
+.button.danger:hover:not(:disabled) { background: #7f251f; border-color: #7f251f; }
+@media (max-width: 760px) { .field-grid.admin-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .admin-view { width: 100%; }
+  .panel.admin-filter-panel, .panel.admin-list-panel { padding: 1rem; }
+  .admin-filter-panel .section-heading, .admin-list-panel .section-heading { flex-direction: column; }
+  .admin-summary-section .section-heading { flex-direction: column; }
+  .admin-summary-context { text-align: left; }
+  .admin-active-filter { max-width: none; padding: 0; text-align: left; }
+  .field-grid.admin-filter-grid { grid-template-columns: 1fr; }
+  .admin-filter-actions { flex-direction: column; }
+  .admin-filter-actions .button { width: 100%; }
+  .admin-table-wrap { margin-inline: -.2rem; overflow: visible; }
+  .admin-submission-table, .admin-submission-table thead, .admin-submission-table tbody, .admin-submission-table tr, .admin-submission-table th, .admin-submission-table td { display: block; }
+  .admin-submission-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+  .admin-submission-table tr { margin-bottom: .85rem; padding: .7rem; border: 1px solid var(--border); border-radius: .55rem; background: #fff; }
+  .admin-submission-table td { display: grid; grid-template-columns: minmax(5.5rem, 36%) 1fr; gap: .5rem; min-height: 2.75rem; align-items: center; padding: .35rem 0; border: 0; }
+  .admin-submission-table td::before { color: var(--muted); content: attr(data-label); font-size: .8rem; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
+  .admin-submission-table td > * { min-width: 0; }
+  .admin-submission-table td { overflow-wrap: anywhere; }
+  .admin-submission-table td:last-child { display: block; padding-top: .7rem; }
+  .admin-submission-table td:last-child::before { content: none; }
+  .admin-view-button { width: 100%; }
+}
