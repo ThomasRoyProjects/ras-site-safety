@@ -1,151 +1,189 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1750" viewBox="0 0 1900 1750" role="img" aria-labelledby="title desc">
-  <title id="title">RAS Site Safety SQLite Durable Object ERD</title>
-  <desc id="desc">Nine strict SQLite tables, their foreign-key relationships, and important constraints.</desc>
-  <rect width="1900" height="1750" fill="#f4f5f1"/>
-  <style>
-    text{font-family:Arial,sans-serif;fill:#242424}
-    .title{font-size:34px;font-weight:bold}
-    .subtitle{font-size:20px}
-    .entity{font-size:23px;font-weight:bold;fill:white}
-    .column{font-family:monospace;font-size:16px}
-    .relation{font-size:17px;fill:#065841;font-weight:bold}
-    .note{font-size:18px}
-    .small{font-size:16px}
-  </style>
-  <text class="title" x="50" y="55">RAS Site Safety — SQLite Durable Object ERD</text>
-  <text class="subtitle" x="50" y="92">Nine STRICT tables in SAFETY_APP / ras-site-safety. This diagram is simplified. See server/schema.sql for every NOT NULL and CHECK detail.</text>
-  <text class="subtitle" x="50" y="122">PK = primary key. FK = foreign key. SQL parent-to-child cardinality is 1 → 0..N unless shown otherwise.</text>
-
-  <g fill="none" stroke="#065841" stroke-width="3">
-    <path d="M470 280H560V440H650"/>
-    <path d="M990 245V390"/>
-    <path d="M1120 500H1260"/>
-    <path d="M1470 590V690"/>
-    <path d="M1470 590H1725V355"/>
-    <path d="M250 485V690"/>
-  </g>
-  <text class="relation" x="490" y="260">1 → 0..N</text>
-  <text class="relation" x="1008" y="340">1 → 0..N</text>
-  <text class="relation" x="1135" y="480">1 → 0..N</text>
-  <text class="relation" x="1490" y="655">1 → 0..N</text>
-  <text class="relation" x="1540" y="375">1 → 0..1</text>
-  <text class="relation" x="270" y="600">1 → 0..N</text>
-
-  <g>
-    <rect x="50" y="160" width="420" height="330" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
-    <path d="M58 160H462Q470 160 470 168V202H50V168Q50 160 58 160" fill="#065841"/>
-    <text class="entity" x="66" y="189">users</text>
-    <text class="column" x="66" y="228">id INTEGER [PK]</text>
-    <text class="column" x="66" y="253">email TEXT NOT NULL [NOCASE UNIQUE]</text>
-    <text class="column" x="66" y="278">name TEXT NOT NULL [trim CHECK]</text>
-    <text class="column" x="66" y="303">password_hash TEXT NOT NULL</text>
-    <text class="column" x="66" y="328">role TEXT NOT NULL [framer|admin]</text>
-    <text class="column" x="66" y="353">created_at TEXT NOT NULL</text>
-    <text class="column" x="66" y="378">must_change_password INTEGER [0|1]</text>
-    <text class="small" x="66" y="420">flag: NOT NULL DEFAULT 0 with 0|1 CHECK</text>
-  </g>
-
-  <g>
-    <rect x="560" y="160" width="430" height="125" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
-    <path d="M568 160H982Q990 160 990 168V202H560V168Q560 160 568 160" fill="#065841"/>
-    <text class="entity" x="576" y="189">sites</text>
-    <text class="column" x="576" y="228">id INTEGER [PK]</text>
-    <text class="column" x="576" y="253">name TEXT NOT NULL [NOCASE UNIQUE]</text>
-    <text class="small" x="576" y="275">trim(name) CHECK</text>
-  </g>
-
-  <g>
-    <rect x="650" y="390" width="470" height="485" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
-    <path d="M658 390H1112Q1120 390 1120 398V432H650V398Q650 390 658 390" fill="#065841"/>
-    <text class="entity" x="666" y="419">submissions</text>
-    <text class="column" x="666" y="458">id INTEGER [PK]</text>
-    <text class="column" x="666" y="483">worker_id INTEGER NOT NULL [FK]</text>
-    <text class="column" x="666" y="508">site_id INTEGER NOT NULL [FK]</text>
-    <text class="column" x="666" y="533">work_date TEXT NOT NULL [date CHECK]</text>
-    <text class="column" x="666" y="558">hard_hat INTEGER NOT NULL [0|1]</text>
-    <text class="column" x="666" y="583">high_visibility_vest INTEGER [0|1]</text>
-    <text class="column" x="666" y="608">safety_boots INTEGER [0|1]</text>
-    <text class="column" x="666" y="633">eye_protection INTEGER [0|1]</text>
-    <text class="column" x="666" y="658">fall_protection INTEGER [0|1]</text>
-    <text class="column" x="666" y="683">ladders_scaffolds_inspected INTEGER [0|1]</text>
-    <text class="column" x="666" y="708">tools_cords_checked INTEGER [0|1]</text>
-    <text class="column" x="666" y="733">hazards_identified INTEGER [0|1]</text>
-    <text class="column" x="666" y="758">notes TEXT NOT NULL DEFAULT ''</text>
-    <text class="column" x="666" y="783">created_at TEXT NOT NULL</text>
-    <text class="column" x="666" y="833">UNIQUE (worker_id, site_id, work_date)</text>
-  </g>
-
-  <g>
-    <rect x="1260" y="390" width="430" height="205" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
-    <path d="M1268 390H1682Q1690 390 1690 398V432H1260V398Q1260 390 1268 390" fill="#065841"/>
-    <text class="entity" x="1276" y="419">photos</text>
-    <text class="column" x="1276" y="458">id INTEGER [PK]</text>
-    <text class="column" x="1276" y="483">submission_id INTEGER NOT NULL [FK]</text>
-    <text class="column" x="1276" y="508">mime_type TEXT NOT NULL [JPEG|PNG|WebP]</text>
-    <text class="column" x="1276" y="533">size_bytes INTEGER NOT NULL [1..10485760]</text>
-    <text class="small" x="1276" y="570">photos_submission_id_idx</text>
-  </g>
-
-  <g>
-    <rect x="1260" y="690" width="430" height="205" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
-    <path d="M1268 690H1682Q1690 690 1690 698V732H1260V698Q1260 690 1268 690" fill="#065841"/>
-    <text class="entity" x="1276" y="719">photo_chunks</text>
-    <text class="column" x="1276" y="758">photo_id INTEGER NOT NULL [FK]</text>
-    <text class="column" x="1276" y="783">chunk_index INTEGER NOT NULL [≥ 0]</text>
-    <text class="column" x="1276" y="808">bytes BLOB NOT NULL [1..1048576]</text>
-    <text class="column" x="1276" y="858">PRIMARY KEY (photo_id, chunk_index)</text>
-  </g>
-
-  <g>
-    <rect x="1600" y="120" width="250" height="235" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
-    <path d="M1608 120H1842Q1850 120 1850 128V162H1600V128Q1600 120 1608 120" fill="#065841"/>
-    <text class="entity" x="1616" y="149">photo_thumbnails</text>
-    <text class="column" x="1616" y="188">photo_id INTEGER</text>
-    <text class="column" x="1616" y="213">[PK, FK CASCADE]</text>
-    <text class="column" x="1616" y="252">bytes BLOB NOT NULL</text>
-    <text class="column" x="1616" y="277">[1..1048576 CHECK]</text>
-    <text class="small" x="1616" y="320">stored WebP output</text>
-  </g>
-
-  <g>
-    <rect x="50" y="690" width="420" height="195" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
-    <path d="M58 690H462Q470 690 470 698V732H50V698Q50 690 58 690" fill="#065841"/>
-    <text class="entity" x="66" y="719">sessions</text>
-    <text class="column" x="66" y="758">token_hash TEXT NOT NULL [PK]</text>
-    <text class="column" x="66" y="783">[64 lowercase hex CHECK]</text>
-    <text class="column" x="66" y="822">user_id INTEGER NOT NULL [FK]</text>
-    <text class="column" x="66" y="847">expires_at INTEGER NOT NULL [&gt; 0]</text>
-    <text class="small" x="66" y="872">sessions_user_id_idx, sessions_expires_at_idx</text>
-  </g>
-
-  <g>
-    <rect x="50" y="1020" width="420" height="125" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
-    <path d="M58 1020H462Q470 1020 470 1028V1062H50V1028Q50 1020 58 1020" fill="#065841"/>
-    <text class="entity" x="66" y="1049">app_metadata</text>
-    <text class="column" x="66" y="1088">key TEXT [PK]</text>
-    <text class="column" x="66" y="1113">value TEXT NOT NULL</text>
-  </g>
-
-  <g>
-    <rect x="650" y="1010" width="470" height="235" rx="8" fill="white" stroke="#065841" stroke-width="2"/>
-    <path d="M658 1010H1112Q1120 1010 1120 1018V1052H650V1018Q650 1010 658 1010" fill="#065841"/>
-    <text class="entity" x="666" y="1039">upload_staging_chunks</text>
-    <text class="column" x="666" y="1078">upload_id TEXT NOT NULL [43-char CHECK]</text>
-    <text class="column" x="666" y="1103">photo_index INTEGER NOT NULL [0..4 CHECK]</text>
-    <text class="column" x="666" y="1128">chunk_index INTEGER NOT NULL [≥ 0 CHECK]</text>
-    <text class="column" x="666" y="1153">bytes BLOB NOT NULL [1..1048576 CHECK]</text>
-    <text class="column" x="666" y="1190">PRIMARY KEY (upload_id, photo_index,</text>
-    <text class="column" x="666" y="1215">chunk_index)</text>
-  </g>
-
-  <text class="note" x="50" y="1320">API invariants: one to five decoded photos per submission. Original bytes use contiguous chunks of at most one MiB.</text>
-  <text class="note" x="50" y="1355">The unique worker/site/date key prevents duplicate submissions. The bootstrap marker prevents reseeding.</text>
-  <text class="note" x="50" y="1390">Cascade direction: deleting a photos row deletes matching photo_chunks and photo_thumbnails rows.</text>
-  <text class="note" x="50" y="1425">upload_staging_chunks is temporary, private, request-scoped, and cleared after failure or commit.</text>
-  <text class="note" x="50" y="1475">Indexes: photos_submission_id_idx, sessions_user_id_idx, sessions_expires_at_idx.</text>
-  <text class="note" x="50" y="1510">Application checks add Gregorian dates, ownership, photo count, dimensions, pixels, quotas, and session expiry.</text>
-  <text class="note" x="50" y="1545">Thumbnail rows have a one-to-zero-or-one relationship with photos and store bounded WebP bytes.</text>
-  <text class="note" x="50" y="1580">Migration: add users.must_change_password when absent, then record schema_version=3 in app_metadata.</text>
-  <text class="note" x="50" y="1615">FKs: submissions.worker_id → users.id. submissions.site_id → sites.id. photos.submission_id → submissions.id.</text>
-  <text class="note" x="50" y="1650">FKs: sessions.user_id → users.id. photo_chunks.photo_id and photo_thumbnails.photo_id → photos.id.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="2080" height="1226" viewBox="0 0 2080 1226" role="img" aria-labelledby="t d">
+<title id="t">RAS Site Safety database ERD</title><desc id="d">Nine SQLite tables with primary keys, foreign keys, and relationship cardinality.</desc>
+<rect width="2080" height="1226" fill="#f5f5f1"/>
+<style>
+  .title{font:700 34px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#23262a}
+  .sub{font:400 17px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#6b6f73}
+  .tname{font:700 19px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#fff}
+  .col{font:500 15px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#23262a}
+  .colkey{font:700 15px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#23262a}
+  .type{font:400 13px ui-monospace,Menlo,Consolas,monospace;fill:#6b6f73}
+  .badge{font:700 10px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#fff}
+  .card{font:700 14px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#045339}
+  .group{font:700 14px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#6b6f73;letter-spacing:.06em}
+  .note{font:400 15px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#23262a}
+  .noteh{font:700 16px system-ui,-apple-system,&quot;Segoe UI&quot;,Arial,sans-serif;fill:#23262a}
+</style>
+<text class="title" x="60" y="62">RAS Site Safety — Database ERD</text>
+<text class="sub" x="60" y="94">SQLite Durable Object · 9 STRICT tables · PK = primary key · FK = foreign key · crow’s foot = many · circle = optional · bar = exactly one</text>
+<rect x="60" y="900" width="940" height="274" rx="14" fill="none" stroke="#c9ccc4" stroke-dasharray="8 6" stroke-width="2"/>
+<text class="group" x="84" y="940">SUPPORTING TABLES · NO FOREIGN KEYS</text>
+<path d="M460 215 L520 215 L520 435 L580 435" fill="none" stroke="#3d4a44" stroke-width="2.4"/><line x1="474" y1="224" x2="474" y2="206" stroke="#3d4a44" stroke-width="2.4"/><line x1="482" y1="224" x2="482" y2="206" stroke="#3d4a44" stroke-width="2.4"/><line x1="562" y1="435" x2="580" y2="425" stroke="#3d4a44" stroke-width="2.4"/><line x1="562" y1="435" x2="580" y2="445" stroke="#3d4a44" stroke-width="2.4"/><line x1="562" y1="435" x2="580" y2="435" stroke="#3d4a44" stroke-width="2.4"/><circle cx="550" cy="435" r="7" fill="#f5f5f1" stroke="#3d4a44" stroke-width="2.4"/><rect x="488" y="186" width="70.80000000000001" height="24" rx="5" fill="#f5f5f1"/><text class="card" x="494" y="203">submits</text>
+<path d="M180 414 L180 560" fill="none" stroke="#3d4a44" stroke-width="2.4"/><line x1="171" y1="428" x2="189" y2="428" stroke="#3d4a44" stroke-width="2.4"/><line x1="171" y1="436" x2="189" y2="436" stroke="#3d4a44" stroke-width="2.4"/><line x1="180" y1="542" x2="190" y2="560" stroke="#3d4a44" stroke-width="2.4"/><line x1="180" y1="542" x2="170" y2="560" stroke="#3d4a44" stroke-width="2.4"/><line x1="180" y1="542" x2="180" y2="560" stroke="#3d4a44" stroke-width="2.4"/><circle cx="180" cy="530" r="7" fill="#f5f5f1" stroke="#3d4a44" stroke-width="2.4"/><rect x="196" y="476" width="79.2" height="24" rx="5" fill="#f5f5f1"/><text class="card" x="202" y="493">signs in</text>
+<path d="M800 264 L800 340" fill="none" stroke="#3d4a44" stroke-width="2.4"/><line x1="791" y1="278" x2="809" y2="278" stroke="#3d4a44" stroke-width="2.4"/><line x1="791" y1="286" x2="809" y2="286" stroke="#3d4a44" stroke-width="2.4"/><line x1="800" y1="322" x2="810" y2="340" stroke="#3d4a44" stroke-width="2.4"/><line x1="800" y1="322" x2="790" y2="340" stroke="#3d4a44" stroke-width="2.4"/><line x1="800" y1="322" x2="800" y2="340" stroke="#3d4a44" stroke-width="2.4"/><circle cx="800" cy="310" r="7" fill="#f5f5f1" stroke="#3d4a44" stroke-width="2.4"/><rect x="816" y="291" width="54" height="24" rx="5" fill="#f5f5f1"/><text class="card" x="822" y="308">hosts</text>
+<path d="M1020 405 L1070 405 L1070 435 L1120 435" fill="none" stroke="#3d4a44" stroke-width="2.4"/><line x1="1034" y1="414" x2="1034" y2="396" stroke="#3d4a44" stroke-width="2.4"/><line x1="1042" y1="414" x2="1042" y2="396" stroke="#3d4a44" stroke-width="2.4"/><line x1="1102" y1="435" x2="1120" y2="425" stroke="#3d4a44" stroke-width="2.4"/><line x1="1102" y1="435" x2="1120" y2="445" stroke="#3d4a44" stroke-width="2.4"/><line x1="1102" y1="435" x2="1120" y2="435" stroke="#3d4a44" stroke-width="2.4"/><circle cx="1090" cy="435" r="7" fill="#f5f5f1" stroke="#3d4a44" stroke-width="2.4"/><rect x="1028" y="374" width="70.80000000000001" height="24" rx="5" fill="#f5f5f1"/><text class="card" x="1034" y="391">has 1–5</text>
+<path d="M1540 405 L1590 405 L1590 285 L1640 285" fill="none" stroke="#3d4a44" stroke-width="2.4"/><line x1="1554" y1="414" x2="1554" y2="396" stroke="#3d4a44" stroke-width="2.4"/><line x1="1562" y1="414" x2="1562" y2="396" stroke="#3d4a44" stroke-width="2.4"/><line x1="1622" y1="285" x2="1640" y2="275" stroke="#3d4a44" stroke-width="2.4"/><line x1="1622" y1="285" x2="1640" y2="295" stroke="#3d4a44" stroke-width="2.4"/><line x1="1622" y1="285" x2="1640" y2="285" stroke="#3d4a44" stroke-width="2.4"/><circle cx="1610" cy="285" r="7" fill="#f5f5f1" stroke="#3d4a44" stroke-width="2.4"/><rect x="1498" y="254" width="87.60000000000001" height="24" rx="5" fill="#f5f5f1"/><text class="card" x="1504" y="271">stored as</text>
+<path d="M1540 495 L1590 495 L1590 585 L1640 585" fill="none" stroke="#3d4a44" stroke-width="2.4"/><line x1="1554" y1="504" x2="1554" y2="486" stroke="#3d4a44" stroke-width="2.4"/><line x1="1562" y1="504" x2="1562" y2="486" stroke="#3d4a44" stroke-width="2.4"/><line x1="1626" y1="576" x2="1626" y2="594" stroke="#3d4a44" stroke-width="2.4"/><circle cx="1612" cy="585" r="7" fill="#f5f5f1" stroke="#3d4a44" stroke-width="2.4"/><rect x="1510" y="602" width="70.80000000000001" height="24" rx="5" fill="#f5f5f1"/><text class="card" x="1516" y="619">preview</text>
+<rect x="63" y="155" width="400" height="264" rx="12" fill="#0000000f"/>
+<rect x="60" y="150" width="400" height="264" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<path d="M60 162 a12 12 0 0 1 12 -12 h376 a12 12 0 0 1 12 12 v34 h-400 z" fill="#045339"/>
+<text class="tname" x="78" y="180">users</text>
+<rect x="74" y="206" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="88" y="219" text-anchor="middle">PK</text>
+<text class="colkey" x="130" y="220">id</text>
+<text class="type" x="444" y="220" text-anchor="end">INTEGER</text>
+<rect x="61" y="230" width="398" height="30" fill="#f4f6f2"/>
+<text class="col" x="130" y="250">email</text>
+<text class="type" x="444" y="250" text-anchor="end">TEXT · unique</text>
+<text class="col" x="130" y="280">name</text>
+<text class="type" x="444" y="280" text-anchor="end">TEXT</text>
+<rect x="61" y="290" width="398" height="30" fill="#f4f6f2"/>
+<text class="col" x="130" y="310">password_hash</text>
+<text class="type" x="444" y="310" text-anchor="end">TEXT · scrypt</text>
+<text class="col" x="130" y="340">role</text>
+<text class="type" x="444" y="340" text-anchor="end">TEXT · framer | admin</text>
+<rect x="61" y="350" width="398" height="30" fill="#f4f6f2"/>
+<text class="col" x="130" y="370">created_at</text>
+<text class="type" x="444" y="370" text-anchor="end">TEXT</text>
+<text class="col" x="130" y="400">must_change_password</text>
+<text class="type" x="444" y="400" text-anchor="end">INTEGER · 0 | 1</text>
+<rect x="63" y="565" width="400" height="144" rx="12" fill="#0000000f"/>
+<rect x="60" y="560" width="400" height="144" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<path d="M60 572 a12 12 0 0 1 12 -12 h376 a12 12 0 0 1 12 12 v34 h-400 z" fill="#045339"/>
+<text class="tname" x="78" y="590">sessions</text>
+<rect x="74" y="616" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="88" y="629" text-anchor="middle">PK</text>
+<text class="colkey" x="130" y="630">token_hash</text>
+<text class="type" x="444" y="630" text-anchor="end">TEXT · SHA-256</text>
+<rect x="61" y="640" width="398" height="30" fill="#f4f6f2"/>
+<rect x="74" y="646" width="28" height="18" rx="4" fill="#2f5f8a"/><text class="badge" x="88" y="659" text-anchor="middle">FK</text>
+<text class="colkey" x="130" y="660">user_id</text>
+<text class="type" x="444" y="660" text-anchor="end">INTEGER → users</text>
+<text class="col" x="130" y="690">expires_at</text>
+<text class="type" x="444" y="690" text-anchor="end">INTEGER · unix time</text>
+<rect x="583" y="155" width="440" height="114" rx="12" fill="#0000000f"/>
+<rect x="580" y="150" width="440" height="114" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<path d="M580 162 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v34 h-440 z" fill="#045339"/>
+<text class="tname" x="598" y="180">sites</text>
+<rect x="594" y="206" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="608" y="219" text-anchor="middle">PK</text>
+<text class="colkey" x="650" y="220">id</text>
+<text class="type" x="1004" y="220" text-anchor="end">INTEGER</text>
+<rect x="581" y="230" width="438" height="30" fill="#f4f6f2"/>
+<text class="col" x="650" y="250">name</text>
+<text class="type" x="1004" y="250" text-anchor="end">TEXT · unique</text>
+<rect x="583" y="345" width="440" height="474" rx="12" fill="#0000000f"/>
+<rect x="580" y="340" width="440" height="474" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<path d="M580 352 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v34 h-440 z" fill="#045339"/>
+<text class="tname" x="598" y="370">submissions</text>
+<rect x="594" y="396" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="608" y="409" text-anchor="middle">PK</text>
+<text class="colkey" x="650" y="410">id</text>
+<text class="type" x="1004" y="410" text-anchor="end">INTEGER</text>
+<rect x="581" y="420" width="438" height="30" fill="#f4f6f2"/>
+<rect x="594" y="426" width="28" height="18" rx="4" fill="#2f5f8a"/><text class="badge" x="608" y="439" text-anchor="middle">FK</text>
+<text class="colkey" x="650" y="440">worker_id</text>
+<text class="type" x="1004" y="440" text-anchor="end">INTEGER → users</text>
+<rect x="594" y="456" width="28" height="18" rx="4" fill="#2f5f8a"/><text class="badge" x="608" y="469" text-anchor="middle">FK</text>
+<text class="colkey" x="650" y="470">site_id</text>
+<text class="type" x="1004" y="470" text-anchor="end">INTEGER → sites</text>
+<rect x="581" y="480" width="438" height="30" fill="#f4f6f2"/>
+<text class="col" x="650" y="500">work_date</text>
+<text class="type" x="1004" y="500" text-anchor="end">TEXT · YYYY-MM-DD</text>
+<text class="col" x="650" y="530">hard_hat</text>
+<text class="type" x="1004" y="530" text-anchor="end">INTEGER · 0 | 1</text>
+<rect x="581" y="540" width="438" height="30" fill="#f4f6f2"/>
+<text class="col" x="650" y="560">high_visibility_vest</text>
+<text class="type" x="1004" y="560" text-anchor="end">INTEGER · 0 | 1</text>
+<text class="col" x="650" y="590">safety_boots</text>
+<text class="type" x="1004" y="590" text-anchor="end">INTEGER · 0 | 1</text>
+<rect x="581" y="600" width="438" height="30" fill="#f4f6f2"/>
+<text class="col" x="650" y="620">eye_protection</text>
+<text class="type" x="1004" y="620" text-anchor="end">INTEGER · 0 | 1</text>
+<text class="col" x="650" y="650">fall_protection</text>
+<text class="type" x="1004" y="650" text-anchor="end">INTEGER · 0 | 1</text>
+<rect x="581" y="660" width="438" height="30" fill="#f4f6f2"/>
+<text class="col" x="650" y="680">ladders_scaffolds_inspected</text>
+<text class="type" x="1004" y="680" text-anchor="end">INTEGER · 0 | 1</text>
+<text class="col" x="650" y="710">tools_cords_checked</text>
+<text class="type" x="1004" y="710" text-anchor="end">INTEGER · 0 | 1</text>
+<rect x="581" y="720" width="438" height="30" fill="#f4f6f2"/>
+<text class="col" x="650" y="740">hazards_identified</text>
+<text class="type" x="1004" y="740" text-anchor="end">INTEGER · 0 | 1</text>
+<text class="col" x="650" y="770">notes</text>
+<text class="type" x="1004" y="770" text-anchor="end">TEXT</text>
+<rect x="581" y="780" width="438" height="30" fill="#f4f6f2"/>
+<text class="col" x="650" y="800">created_at</text>
+<text class="type" x="1004" y="800" text-anchor="end">TEXT</text>
+<rect x="1123" y="345" width="420" height="174" rx="12" fill="#0000000f"/>
+<rect x="1120" y="340" width="420" height="174" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<path d="M1120 352 a12 12 0 0 1 12 -12 h396 a12 12 0 0 1 12 12 v34 h-420 z" fill="#045339"/>
+<text class="tname" x="1138" y="370">photos</text>
+<rect x="1134" y="396" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="1148" y="409" text-anchor="middle">PK</text>
+<text class="colkey" x="1190" y="410">id</text>
+<text class="type" x="1524" y="410" text-anchor="end">INTEGER</text>
+<rect x="1121" y="420" width="418" height="30" fill="#f4f6f2"/>
+<rect x="1134" y="426" width="28" height="18" rx="4" fill="#2f5f8a"/><text class="badge" x="1148" y="439" text-anchor="middle">FK</text>
+<text class="colkey" x="1190" y="440">submission_id</text>
+<text class="type" x="1524" y="440" text-anchor="end">INTEGER → submissions</text>
+<text class="col" x="1190" y="470">mime_type</text>
+<text class="type" x="1524" y="470" text-anchor="end">TEXT · jpeg | png | webp</text>
+<rect x="1121" y="480" width="418" height="30" fill="#f4f6f2"/>
+<text class="col" x="1190" y="500">size_bytes</text>
+<text class="type" x="1524" y="500" text-anchor="end">INTEGER · ≤ 10 MiB</text>
+<rect x="1643" y="225" width="380" height="144" rx="12" fill="#0000000f"/>
+<rect x="1640" y="220" width="380" height="144" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<path d="M1640 232 a12 12 0 0 1 12 -12 h356 a12 12 0 0 1 12 12 v34 h-380 z" fill="#045339"/>
+<text class="tname" x="1658" y="250">photo_chunks</text>
+<rect x="1654" y="276" width="46" height="18" rx="4" fill="#6a4c93"/><text class="badge" x="1677" y="289" text-anchor="middle">PK FK</text>
+<text class="colkey" x="1710" y="290">photo_id</text>
+<text class="type" x="2004" y="290" text-anchor="end">INTEGER → photos</text>
+<rect x="1641" y="300" width="378" height="30" fill="#f4f6f2"/>
+<rect x="1654" y="306" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="1668" y="319" text-anchor="middle">PK</text>
+<text class="colkey" x="1710" y="320">chunk_index</text>
+<text class="type" x="2004" y="320" text-anchor="end">INTEGER · ≥ 0</text>
+<text class="col" x="1710" y="350">bytes</text>
+<text class="type" x="2004" y="350" text-anchor="end">BLOB · ≤ 1 MiB</text>
+<rect x="1643" y="525" width="380" height="114" rx="12" fill="#0000000f"/>
+<rect x="1640" y="520" width="380" height="114" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<path d="M1640 532 a12 12 0 0 1 12 -12 h356 a12 12 0 0 1 12 12 v34 h-380 z" fill="#045339"/>
+<text class="tname" x="1658" y="550">photo_thumbnails</text>
+<rect x="1654" y="576" width="46" height="18" rx="4" fill="#6a4c93"/><text class="badge" x="1677" y="589" text-anchor="middle">PK FK</text>
+<text class="colkey" x="1710" y="590">photo_id</text>
+<text class="type" x="2004" y="590" text-anchor="end">INTEGER → photos</text>
+<rect x="1641" y="600" width="378" height="30" fill="#f4f6f2"/>
+<text class="col" x="1710" y="620">bytes</text>
+<text class="type" x="2004" y="620" text-anchor="end">BLOB · WebP ≤ 1 MiB</text>
+<rect x="103" y="975" width="380" height="114" rx="12" fill="#0000000f"/>
+<rect x="100" y="970" width="380" height="114" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<path d="M100 982 a12 12 0 0 1 12 -12 h356 a12 12 0 0 1 12 12 v34 h-380 z" fill="#045339"/>
+<text class="tname" x="118" y="1000">app_metadata</text>
+<rect x="114" y="1026" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="128" y="1039" text-anchor="middle">PK</text>
+<text class="colkey" x="170" y="1040">key</text>
+<text class="type" x="464" y="1040" text-anchor="end">TEXT</text>
+<rect x="101" y="1050" width="378" height="30" fill="#f4f6f2"/>
+<text class="col" x="170" y="1070">value</text>
+<text class="type" x="464" y="1070" text-anchor="end">TEXT</text>
+<rect x="523" y="975" width="440" height="174" rx="12" fill="#0000000f"/>
+<rect x="520" y="970" width="440" height="174" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<path d="M520 982 a12 12 0 0 1 12 -12 h416 a12 12 0 0 1 12 12 v34 h-440 z" fill="#045339"/>
+<text class="tname" x="538" y="1000">upload_staging_chunks</text>
+<rect x="534" y="1026" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="548" y="1039" text-anchor="middle">PK</text>
+<text class="colkey" x="590" y="1040">upload_id</text>
+<text class="type" x="944" y="1040" text-anchor="end">TEXT · 43 chars</text>
+<rect x="521" y="1050" width="438" height="30" fill="#f4f6f2"/>
+<rect x="534" y="1056" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="548" y="1069" text-anchor="middle">PK</text>
+<text class="colkey" x="590" y="1070">photo_index</text>
+<text class="type" x="944" y="1070" text-anchor="end">INTEGER · 0–4</text>
+<rect x="534" y="1086" width="28" height="18" rx="4" fill="#a26f0b"/><text class="badge" x="548" y="1099" text-anchor="middle">PK</text>
+<text class="colkey" x="590" y="1100">chunk_index</text>
+<text class="type" x="944" y="1100" text-anchor="end">INTEGER · ≥ 0</text>
+<rect x="521" y="1110" width="438" height="30" fill="#f4f6f2"/>
+<text class="col" x="590" y="1130">bytes</text>
+<text class="type" x="944" y="1130" text-anchor="end">BLOB · ≤ 1 MiB</text>
+<rect x="1100" y="900" width="920" height="276" rx="12" fill="#fff" stroke="#d3d6cf" stroke-width="1.5"/>
+<text class="noteh" x="1124" y="940">Rules</text>
+<text class="note" x="1124" y="968">• One submission per worker, site, and date: UNIQUE (worker_id, site_id, work_date).</text>
+<text class="note" x="1124" y="994">• Each submission has 1–5 photos. Originals are split into chunks of at most 1 MiB.</text>
+<text class="note" x="1124" y="1020">• Deleting a photo cascades to its photo_chunks and photo_thumbnails rows.</text>
+<text class="note" x="1124" y="1046">• upload_staging_chunks holds an upload only until it commits or fails.</text>
+<text class="note" x="1124" y="1072">• app_metadata stores the bootstrap marker and schema_version = 3.</text>
+<text class="noteh" x="1124" y="1110">Indexes</text>
+<text class="note" x="1124" y="1138">• photos_submission_id_idx · sessions_user_id_idx · sessions_expires_at_idx</text>
 </svg>
