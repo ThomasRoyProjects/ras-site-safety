@@ -4,11 +4,20 @@ RAS Site Safety is a React safety-check workspace on Cloudflare Workers. Framers
 
 The production design uses static Vite assets, one Worker, and one SQLite Durable Object. It does not use Express, a local tunnel, R2, D1, KV, Supabase, or paid image storage.
 
-## Delivery status
+## Try it
 
-The public GitHub repository is <https://github.com/ThomasRoyProjects/ras-site-safety>.
+**Live app (no install needed):** <https://ras-site-safety.thomasroy149.workers.dev>
 
-The live Worker is <https://ras-site-safety.thomasroy149.workers.dev>.
+Open the link on a desktop or phone and sign in with the test accounts below. Their passwords are provided privately with the assessment submission. The live site runs the same code as this repository.
+
+| Role | Email |
+|---|---|
+| Admin | `admin@example.test` |
+| Framer | `framer@example.test` |
+
+**Run it locally instead:** see [Local prerequisites and commands](#local-prerequisites-and-commands). It uses Wrangler and seeds a fresh local database with passwords you choose.
+
+**Source:** <https://github.com/ThomasRoyProjects/ras-site-safety>
 
 ## What runs where
 
@@ -238,7 +247,7 @@ Upload staging and permanent chunks can coexist briefly during commit. A transac
 
 ## Suggested walkthrough
 
-1. Start Wrangler on port 8787.
+1. Open the live app, or start Wrangler locally on port 8787.
 2. Sign in with a test account. Its password is provided privately with the assessment submission.
 3. Open Overview and confirm real counts, latest dates, and site counts.
 4. As Admin, open Staff and expand the creation details only when needed.
