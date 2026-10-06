@@ -15,3 +15,7 @@ uploads/
 
 .DS_Store
 .wrangler/
+
+playwright-report/
+test-results/
+blob-report/

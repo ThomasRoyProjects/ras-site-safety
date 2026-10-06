@@ -44,11 +44,25 @@ Edit `.dev.vars` and choose two passwords of 12–128 characters. `npm start` ru
 
 The Vite server proxies `/api` to Wrangler on port 8787.
 
-These initial passwords seed only a fresh local database. Existing local `.wrangler` state keeps its current passwords. Tests use separate test-only values from `vitest.config.js`.
+These initial passwords seed only a fresh local database. Existing local `.wrangler` state keeps its current passwords.
 
-The Durable Object initializes its schema and fictional seed data on first access. `npm test` runs the native Vitest and Workers suite in `tests/backend.test.js`.
+The Durable Object initializes its schema and fictional seed data on first access.
 
 `npm run deploy` builds and invokes Wrangler deployment.
+
+## Tests
+
+```sh
+npm test
+npx playwright install chromium webkit
+npm run test:e2e
+```
+
+`npm test` runs the backend suite in `tests/backend.test.js`. It uses Vitest on the local Workers runtime with real SQLite Durable Object storage. Its test-only passwords live in `vitest.config.js`.
+
+`npm run test:e2e` runs the Playwright browser suite in `e2e/`. It builds the app and starts a fresh Wrangler server on port 8788 with its own `.wrangler/e2e` state. It never touches your normal local data or the live site.
+
+The browser suite runs every test twice: desktop Chromium at 1440×900 and an iPhone profile on WebKit. It covers login, the Framer submission and history, validation focus, Admin filters and deletion, the staff temporary-password flow, role navigation, and phone layout. The one-time browser install is only needed once per machine.
 
 ## Cloudflare authorization and quotas
 
@@ -211,6 +225,7 @@ Upload staging and permanent chunks can coexist briefly during commit. A transac
 - `src/isAbortError.js` — Shared aborted-request detection.
 - `src/styles.css`, `src/components/*.css`, and `src/components/StaffView.css` — Responsive layout, role navigation, dialogs, drawers, and focus styling.
 - `tests/backend.test.js` — Native local Worker and Durable Object behavior suite.
+- `e2e/*.spec.js`, `e2e/helpers.js`, and `playwright.config.js` — Playwright browser suite for desktop Chromium and iPhone WebKit.
 - `wrangler.jsonc` — Worker, static assets, stable Durable Object binding, and Images binding.
 - [ERD PDF](docs/erd.pdf), [PNG](docs/erd.png), and [SVG source](docs/erd.svg) — Current nine-table schema diagram. The schema source remains authoritative.
 

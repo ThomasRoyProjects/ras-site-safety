@@ -131,7 +131,11 @@ function NewSubmissionForm({ user, sites, sitesLoading, sitesError, onRetrySites
   React.useEffect(() => {
     if (!focusSummaryOnUpdateRef.current) return;
     focusSummaryOnUpdateRef.current = false;
-    if (Object.keys(errors).length > 0) errorSummaryRef.current?.focus();
+    if (Object.keys(errors).length > 0) {
+      // WebKit does not reliably scroll a focused element into view.
+      errorSummaryRef.current?.focus({ preventScroll: true });
+      errorSummaryRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' });
+    }
   }, [errors]);
 
   const focusError = React.useCallback((key) => {
