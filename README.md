@@ -96,7 +96,7 @@ The outer Worker checks declared length. A body-bearing POST without `Content-Le
 
 Login admission permits two active verifications. Failed attempts allow 20 per client IP and five per normalized email in a 15-minute window.
 
-The application offers no public login or sign-up. Quotas and limits bound abuse from any compromised account. Admins should rotate any shared test password after the assessment.
+The application offers no public login or sign-up. Quotas and limits bound abuse from any compromised account. Admins must rotate any shared test password after the assessment.
 
 The limiter tracks at most 1,024 keys. One user keeps at most five active sessions.
 
