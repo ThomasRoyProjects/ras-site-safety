@@ -88,7 +88,7 @@ npx wrangler secret put ADMIN_INITIAL_PASSWORD
 npx wrangler secret put FRAMER_INITIAL_PASSWORD
 ```
 
-The existing live database is already bootstrapped and does not need these secrets. On a fresh database, bootstrap fails closed with a clear error when either secret is missing or invalid. After the bootstrap marker exists, startup never reads these secrets.
+The existing live database is already bootstrapped and does not need these secrets. On a fresh database, bootstrap fails closed when either secret is missing or invalid. API requests then return `503` with a "Server setup incomplete" message, which the login screen shows. After the bootstrap marker exists, startup never reads these secrets.
 
 The configuration needs no `.env` file, signing key, R2 bucket, or separate image storage. Never commit credentials.
 
@@ -173,7 +173,7 @@ Anonymous protected requests return `401`. Wrong roles return `403`. Temporary u
 
 Duplicate worker, site, and date returns `409`. A concurrent password reset can return `409` with `Password was changed by another request. Try again.` Invalid input returns `400`. A submission DELETE with body bytes returns `400`.
 
-Storage quota returns `413` with `Photo storage limit reached`. A full upload queue returns `503` with `Uploads are busy. Try again shortly.` The rolling daily limit returns `429` with `Daily submission limit reached. Try again tomorrow.` KDF and login limits also return `429`.
+Storage quota returns `413` with `Photo storage limit reached`. A full upload queue returns `503` with `Uploads are busy. Try again shortly.` The rolling daily limit returns `429` with `Daily submission limit reached. Try again tomorrow.` KDF and login limits also return `429`. A fresh database without valid initial passwords returns `503` with a "Server setup incomplete" message.
 
 The outer Worker returns `411 Content-Length required` when a POST has a body without `Content-Length`. Oversized requests return `413` before the Durable Object reads beyond the limit. A submission DELETE with body bytes returns `400`. An empty browser DELETE body stream is accepted.
 
@@ -193,11 +193,11 @@ Password-setting paths require 12–128 Unicode code points without trimming. Lo
 
 The scrypt profile uses `N=32768`, `r=8`, `p=3`, a 16-byte salt, and a 64-byte derived key. Shared KDF admission allows two active operations.
 
-Multipart files stream into one MiB SQL chunks. Structural image checks process at most one ten MiB file at a time.
+Multipart files stream into one MiB SQL chunks. Image checks run one file at a time.
 
 Each accepted photo gets a quality-80 WebP thumbnail. Its longest side is at most 480 pixels, and its output is at most one MiB.
 
-Early `401`, `403`, and `404` paths drain rejected request bodies incrementally. Cancellation is only a fallback after a drain read fails. This keeps forwarded streams settled.
+Early `401`, `403`, and `404` paths drain rejected request bodies incrementally. Cancellation is only a fallback after a drain read fails. This keeps forwarded streams settled. A submission DELETE reads at most one chunk to detect a body, then cancels it.
 
 ## Storage and migration
 
@@ -219,7 +219,7 @@ Upload staging and permanent chunks can coexist briefly during commit. A transac
 - `server/index.js` — Worker routing, migration, bootstrap, authentication, limiters, staff APIs, password workflows, role guards, multipart staging, image validation, quotas, thumbnails, SQL, and photo streaming. It also handles submission mutation locking and deletion.
 - `server/schema.sql` — Nine strict tables, thumbnail storage, session indexes, and the temporary-password flag.
 - `server/passwords.js` — `scrypt-v1` hashing and verification.
-- `server/demo-data.json` — Fictional bootstrap users, sites, and migration fixture data.
+- `server/demo-data.json` — Fictional bootstrap users without passwords, the two sites, and three sample records.
 - `src/App.jsx` — Session restoration, role navigation, login, forced password mode, h1 focus, and notices.
 - `src/api.js` — Same-origin JSON and FormData fetch helper.
 - `src/components/FramerView.jsx` — Checklist, date, notes, photos, history, client pagination, detail drawer, and thumbnails.
@@ -240,6 +240,7 @@ Upload staging and permanent chunks can coexist briefly during commit. A transac
 - `tests/backend.test.js` — Native local Worker and Durable Object behavior suite.
 - `e2e/*.spec.js`, `e2e/helpers.js`, and `playwright.config.js` — Playwright browser suite for desktop Chromium and iPhone WebKit.
 - `wrangler.jsonc` — Worker, static assets, stable Durable Object binding, and Images binding.
+- `vite.config.js`, `vitest.config.js`, `index.html`, `src/main.jsx`, `public/robots.txt`, and `.dev.vars.example` — Build, test, entry, crawler, and local-secret configuration.
 - `scripts/start.mjs` — `npm start` setup: Node check, `.dev.vars` creation, build, free-port selection, and Wrangler launch.
 - [ERD PDF](docs/erd.pdf), [PNG](docs/erd.png), and [SVG source](docs/erd.svg) — Current nine-table schema diagram. The schema source remains authoritative.
 
