@@ -30,6 +30,11 @@ const CHECKLIST_FIELDS = [
 const SUBMISSION_FIELDS = new Set(['site_id', 'work_date', 'notes', ...CHECKLIST_FIELDS]);
 const MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const JSON_HEADERS = { 'Content-Type': 'application/json; charset=utf-8' };
+const SETUP_ERROR_MESSAGE =
+  'Server setup incomplete. Set ADMIN_INITIAL_PASSWORD and FRAMER_INITIAL_PASSWORD ' +
+  '(npm start creates .dev.vars for local use), then restart.';
+const SETUP_BOOTSTRAP_ERROR =
+  'Set ADMIN_INITIAL_PASSWORD and FRAMER_INITIAL_PASSWORD before first start';
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const LOGIN_IP_FAILURE_LIMIT = 20;
 const LOGIN_EMAIL_FAILURE_LIMIT = 5;
@@ -55,6 +60,17 @@ function json(data, status = 200, headers = {}) {
 }
 function error(status, message) {
   return json({ error: message }, status);
+}
+
+class SetupIncompleteError extends Error {
+  constructor() {
+    super(SETUP_BOOTSTRAP_ERROR);
+    this.name = 'SetupIncompleteError';
+  }
+}
+
+function setupIncompleteError() {
+  return error(503, SETUP_ERROR_MESSAGE);
 }
 function validId(value) {
   return (
@@ -637,7 +653,8 @@ export class SafetyApp {
     this.activeKdfOperations = 0;
     this.submissionMutationQueue = Promise.resolve();
     this.pendingUploads = 0;
-    state.blockConcurrencyWhile(async () => {
+    this.setupIncompleteError = null;
+    this.ready = Promise.resolve(state.blockConcurrencyWhile(async () => {
       const sql = state.storage.sql;
       sql.exec(schema);
       this.migrateSchema(sql);
@@ -655,9 +672,8 @@ export class SafetyApp {
           framer: this.env.FRAMER_INITIAL_PASSWORD
         };
         if (!validPassword(passwords.admin) || !validPassword(passwords.framer)) {
-          throw new Error(
-            'Set ADMIN_INITIAL_PASSWORD and FRAMER_INITIAL_PASSWORD before first start'
-          );
+          this.setupIncompleteError = new SetupIncompleteError();
+          return;
         }
         const [adminHash, framerHash] = await Promise.all([
           hashPassword(passwords.admin),
@@ -681,7 +697,7 @@ export class SafetyApp {
       });
       // A new object instance cannot overlap the abandoned request that created these rows.
       sql.exec('DELETE FROM upload_staging_chunks');
-    });
+    }));
   }
   migrateSchema(sql) {
     const columns = queryRows(sql, 'PRAGMA table_info(users)');
@@ -2123,6 +2139,10 @@ export class SafetyApp {
   }
   async fetch(request) {
     try {
+      await this.ready;
+      if (this.setupIncompleteError instanceof SetupIncompleteError) {
+        return setupIncompleteError();
+      }
       return await this.route(request);
     } catch {
       return error(500, 'Internal server error');
@@ -2171,6 +2191,8 @@ export default {
           ? new Request(request.url, { method: 'DELETE', headers })
           : new Request(request, { headers });
         return await stub.fetch(forwarded);
+      } catch {
+        return error(500, 'Internal server error');
       } finally {
         await drainUnreadRequestBody(request);
       }

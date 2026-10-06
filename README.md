@@ -15,7 +15,7 @@ Open the link on a desktop or phone and sign in with the test accounts below. Th
 | Admin | `admin@example.test` |
 | Framer | `framer@example.test` |
 
-**Run it locally instead:** see [Local prerequisites and commands](#local-prerequisites-and-commands). It uses Wrangler and seeds a fresh local database with passwords you choose.
+**Run it locally instead:** `npm ci`, then `npm start`. See [Local prerequisites and commands](#local-prerequisites-and-commands).
 
 **Source:** <https://github.com/ThomasRoyProjects/ras-site-safety>
 
@@ -44,18 +44,22 @@ Use Node `^22.16.0` or `>=24.0.0`.
 
 ```sh
 npm ci
-npm run build
-cp .dev.vars.example .dev.vars
 npm start
 ```
 
-Edit `.dev.vars` and choose two passwords of 12–128 characters. `npm start` runs `wrangler dev --ip 127.0.0.1 --port 8787`. Open <http://127.0.0.1:8787>. For optional Vite development, run `npm run dev` in another terminal. Open <http://127.0.0.1:5173>.
+`npm start` does the setup for you:
 
-The Vite server proxies `/api` to Wrangler on port 8787.
+1. It checks your Node version.
+2. If `.dev.vars` is missing, it creates the file with two random passwords. It prints them once with the Admin and Framer emails. It never overwrites an existing `.dev.vars`.
+3. It builds the app.
+4. It starts Wrangler on port 8787. If that port is busy, it uses the next free port. Set `PORT` to choose a different start port.
+5. It prints the local URL. Open that URL and sign in with the printed passwords.
 
-These initial passwords seed only a fresh local database. Existing local `.wrangler` state keeps its current passwords.
+The passwords in `.dev.vars` seed only a fresh local database. Existing local `.wrangler` state keeps the passwords it already has. To use your own passwords, copy `.dev.vars.example` to `.dev.vars` and fill in two passwords of 12–128 characters before the first start.
 
-The Durable Object initializes its schema and fictional seed data on first access.
+If the first login says "Server setup incomplete", `.dev.vars` is missing or invalid. Fix the file, then restart `npm start`.
+
+For optional Vite development, keep Wrangler on port 8787 and run `npm run dev` in another terminal. Open <http://127.0.0.1:5173>. The Vite server proxies `/api` to port 8787.
 
 `npm run deploy` builds and invokes Wrangler deployment.
 
@@ -236,6 +240,7 @@ Upload staging and permanent chunks can coexist briefly during commit. A transac
 - `tests/backend.test.js` — Native local Worker and Durable Object behavior suite.
 - `e2e/*.spec.js`, `e2e/helpers.js`, and `playwright.config.js` — Playwright browser suite for desktop Chromium and iPhone WebKit.
 - `wrangler.jsonc` — Worker, static assets, stable Durable Object binding, and Images binding.
+- `scripts/start.mjs` — `npm start` setup: Node check, `.dev.vars` creation, build, free-port selection, and Wrangler launch.
 - [ERD PDF](docs/erd.pdf), [PNG](docs/erd.png), and [SVG source](docs/erd.svg) — Current nine-table schema diagram. The schema source remains authoritative.
 
 ## Assumptions
@@ -247,8 +252,8 @@ Upload staging and permanent chunks can coexist briefly during commit. A transac
 
 ## Suggested walkthrough
 
-1. Open the live app, or start Wrangler locally on port 8787.
-2. Sign in with a test account. Its password is provided privately with the assessment submission.
+1. Open the live app, or run `npm start` and open the local URL it prints.
+2. Sign in with a test account. On the live app, its password is provided privately with the assessment submission. Locally, use the passwords `npm start` printed.
 3. Open Overview and confirm real counts, latest dates, and site counts.
 4. As Admin, open Staff and expand the creation details only when needed.
 5. Create a fictional staff account with a temporary password. Do not record that password.

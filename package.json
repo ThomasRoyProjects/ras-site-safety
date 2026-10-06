@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "start": "wrangler dev --ip 127.0.0.1 --port 8787",
+    "start": "node scripts/start.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "build": "vite build",

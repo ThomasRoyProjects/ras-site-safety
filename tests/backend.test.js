@@ -1,4 +1,4 @@
-import { SafetyApp } from '../server/index.js';
+import worker, { SafetyApp } from '../server/index.js';
 import { verifyPassword } from '../server/passwords.js';
 import { createHash } from 'node:crypto';
 import { env, exports as workerExports } from 'cloudflare:workers';
@@ -266,9 +266,10 @@ describe('SafetyApp on real workerd and SQLite Durable Object storage', () => {
 
       for (const initialEnv of invalidEnvironments) {
         const failed = startSafetyApp(storage, initialEnv);
-        await expect(failed.startup).rejects.toThrow(
-          'Set ADMIN_INITIAL_PASSWORD and FRAMER_INITIAL_PASSWORD before first start'
-        );
+        await failed.startup;
+        expect((await failed.app.fetch(
+          new Request(`${BASE}/api/health`)
+        )).status).toBe(503);
         expect(failed.transactionCalls()).toBe(0);
         expect(bootstrapCounts(storage)).toEqual({ users: 0, marker: 0 });
       }
@@ -292,6 +293,76 @@ describe('SafetyApp on real workerd and SQLite Durable Object storage', () => {
         verifyPassword(PASSWORDS.admin, users[1].password_hash),
         verifyPassword(PASSWORDS.framer, users[1].password_hash)
       ])).toEqual([true, false, false, true]);
+    });
+  });
+
+  it('returns a setup response when a fresh database has no initial passwords', async () => {
+    await runInDurableObject(appStub(), async (instance) => {
+      const storage = instance.state.storage;
+      clearBootstrapData(storage);
+      const failed = startSafetyApp(storage, {});
+      await failed.startup;
+
+      const expected = {
+        error: 'Server setup incomplete. Set ADMIN_INITIAL_PASSWORD and FRAMER_INITIAL_PASSWORD ' +
+          '(npm start creates .dev.vars for local use), then restart.'
+      };
+      const body = JSON.stringify({
+        email: 'admin@example.test',
+        password: 'not-used'
+      });
+      const failingEnv = {
+        SAFETY_APP: {
+          getByName() {
+            return failed.app;
+          }
+        }
+      };
+      const login = await worker.fetch(new Request(`${BASE}/api/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': String(new TextEncoder().encode(body).byteLength),
+          Origin: BASE
+        },
+        body
+      }), failingEnv);
+      expect(login.status).toBe(503);
+      expect(await login.json()).toEqual(expected);
+      expect(login.headers.get('cache-control')).toBe('no-store');
+      expect(login.headers.get('x-content-type-options')).toBe('nosniff');
+
+      const health = await worker.fetch(
+        new Request(`${BASE}/api/health`),
+        failingEnv
+      );
+      expect(health.status).toBe(503);
+      expect(await health.json()).toEqual(expected);
+      expect(health.headers.get('cache-control')).toBe('no-store');
+      expect(health.headers.get('x-content-type-options')).toBe('nosniff');
+    });
+  });
+
+  it('keeps every non-setup failure generic and private', async () => {
+    await runInDurableObject(appStub(), async (instance) => {
+      const route = instance.route;
+      instance.route = async () => {
+        const failure = new Error(
+          'Set ADMIN_INITIAL_PASSWORD and FRAMER_INITIAL_PASSWORD before first start'
+        );
+        failure.name = 'SetupIncompleteError';
+        failure.code = 'SETUP_INCOMPLETE';
+        throw failure;
+      };
+      try {
+        const response = await instance.fetch(new Request(`${BASE}/api/health`));
+        expect(response.status).toBe(500);
+        expect(await response.json()).toEqual({ error: 'Internal server error' });
+        expect(response.headers.get('cache-control')).toBe('no-store');
+        expect(response.headers.get('x-content-type-options')).toBe('nosniff');
+      } finally {
+        instance.route = route;
+      }
     });
   });
 
